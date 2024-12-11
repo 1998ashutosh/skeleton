@@ -11,6 +11,7 @@ const App = () => {
     // read world atlas data amd migrant data
     const worldAtlas = useWorldAtlas();
     const data = useData();
+    const MissingMigrants = useData();
     if (!worldAtlas || !data) {
         return <div>Loading data....</div>;
     }
@@ -29,7 +30,9 @@ const App = () => {
                 
                 <WorldGraticule />
                 // TODO 2.1: add the countries element and pass it the world Atlas
+                <Countries worldAtlas={worldAtlas} />
                 // TODO 2.2: add the Bubbles element and pass it the data
+                <Bubbles data={MissingMigrants} projection={projection}/>
                 // TODO 4.1: Pass the filtered data to bubbles
                 <g transform={`translate(0, ${height - dateHistogramSize * height})`}>
                     // TODO 3.1: create a Histogram element and pass it the width and height
