@@ -32,14 +32,17 @@ const useWorldAtlas = () => {
 };
 
 // the URL where the missing migrants data is downloaded from
-const csvUrl = 'https://gist.githubusercontent.com/curran/a9656d711a8ad31d812b8f9963ac441c/raw/MissingMigrants-Global-2019-10-08T09-47-14-subset.csv';
+const csvUrl = 'https://gist.githubusercontent.com/1998ashutosh/d07ef9c71723bd0ff8aebb67a116451a/raw/e068a1e6d273cfb4d01cc9812657cce50f5934b4/MissingMigrants-Global-2020-2023.csv';
+
+const parseDate = d3.timeParse("%a, %m/%d/%Y - %H:%M");
 
 const row = d => {
-    d.coords = d['Location Coordinates'] ? d['Location Coordinates'].split(',').map(value => +value).reverse() : [];
-    d['Total Dead and Missing'] = +d['Total Dead and Missing'];
-    d['Reported Date'] = new Date(d['Reported Date']);
+    d.coords = d['Coordinates'] ? d['Coordinates'].split(',').map(value => +value).reverse() : [];
+    d['Total Number of Dead and Missing'] = +d['Total Number of Dead and Missing'];
+    d['Reported Date'] = parseDate(d['Reported Date']) || null;
     return d;
 };
+
 
 const useData = () => {
     const [data, setData] = React.useState(null);
