@@ -35,6 +35,7 @@ const App = () => {
                 // TODO 4.1: Pass the filtered data to bubbles
                 <g transform={`translate(0, ${height - dateHistogramSize * height})`}>
                     // TODO 3.1: create a Histogram element and pass it the width and height
+                    <Histogram data={data} width={width} height={height} />
                     // TODO 4.1: Pass the setter function of the brush extent to Histogram
                 </g>
             </svg>

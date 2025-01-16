@@ -13,10 +13,43 @@
             // TODO 3.2: add the text moved slightly to the left (use tick offset) 
             // TODO 3.2: set the style attribute to  to make sure it aligns properly
             // TODO 3.2: add the tick value as the text
+            
+            const AxisLeft = ({ yScale, innerWidth, tickOffset }) => (
+              <g className="y-axis">
+                {yScale.ticks().map((tickValue) => (
+                  <g
+                    className="tick"
+                    key={tickValue}
+                    transform={`translate(0,${yScale(tickValue)})`}
+                  >
+                    <line x2={innerWidth} stroke="black" />
+                    <text style={{ textAnchor: "end" }} x={-tickOffset} dy=".32em">
+                      {tickValue}
+                    </text>
+                  </g>
+                ))}
+              </g>
+            );
+            
 
 // TODO 3.2: add the bottom axis in the same way as the axis left. You will need the innerHeight to specify for positioning the text and line
 // TODO 3.2: the textAnchor style for the text should be middle now
-
+const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
+    <g className="x-axis" transform={`translate(0,${innerHeight})`}>
+      {xScale.ticks().map((tickValue) => (
+        <g
+          className="tick"
+          key={tickValue}
+          transform={`translate(${xScale(tickValue)},0)`}
+        >
+          <line y2={-innerHeight} stroke="black" />
+          <text style={{ textAnchor: "middle" }} dy=".71em" y={tickOffset}>
+            {d3.timeFormat("%b %Y")(tickValue)}
+          </text>
+        </g>
+      ))}
+    </g>
+  );
 // TODO 3.2: create a Bars component and add parameter when you need them for the following todos
     // TODO 3.2: map each binned data entry to a rectangle
             // TODO 3.2: className should be bar
@@ -27,7 +60,20 @@
             // TODO 3.2: width of a bar should be the difference between start and end date of each bar
             // TODO 3.2: height must be the inner height minus the height of the bar
 
-
+            const Bars = ({ binnedData, xScale, yScale, innerHeight }) => (
+                <g className="bars">
+                  {binnedData.map((bin, index) => (
+                    <rect
+                      className="bar"
+                      key={index}
+                      x={xScale(bin.x0)}
+                      y={yScale(bin.y)}
+                      width={xScale(bin.x1) - xScale(bin.x0)}
+                      height={innerHeight - yScale(bin.y)}
+                    />
+                  ))}
+                </g>
+              );
 // TODO 3.1: Define an accessor function called yValue to access the total number of dead and missing migrants 
 // 			 ("Total Dead and Missing") from the original data table.
 // TODO 3.2: Define variables containing the text of your y axis label (we won't define an x axis label)
@@ -38,27 +84,51 @@ const margin = { top: 0, right: 30, bottom: 20, left: 45 };
 // TODO 3.2: Define a time format using d3.timeFormat
 
 // TODO 4.1: brush extent setter as parameter
-const Histogram = ({width, height}) => {
+const Histogram = ({width, height, data}) => {
     // TODO 3.1: compute innerHeight and innerWidth by subtracting the margins from width and height. If
     // 			you replace width and height in the placeholder rectangle below you will see it shrinking but
     // 			move to the wrong place. We will take care of that later
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
     // TODO 3.1: Define an accessor function (xValue) to access the date of the incident ("Reported Date") from
     // 			 the orignal data table.
-
+    const yValue = (d) => d["Total Number of Dead and Missing"];
+    const xValue = (d) => d["Reported Date"];
     // TODO 3.1: define the xScale using d3.scaleTime
             // TODO 3.1: domain from min to max value of data. u can use d3.extent
             // TODO 3.1: the range starts at zero and ends at inner width
-            // TODO 3.1: call nice to make it nice numbers for labeling		
+            // TODO 3.1: call nice to make it nice numbers for labeling	
+    const xScale = d3
+    .scaleTime()
+    .domain(d3.extent(data, xValue))
+    .range([0, innerWidth])
+    .nice();	
     // TODO 4.2: Memoization for scale
     
     // TODO 3.1: grab the start and end from the domain
 
     // TODO 3.1: aggregate the data into bins you can find a detailed description in the pdf
+    const binnedData = d3
+    .bin()
+    .value(xValue)
+    .domain(xScale.domain())
+    .thresholds(d3.timeMonths(...xScale.domain()))(data)
+    .map((bin) => ({
+      x0: bin.x0,
+      x1: bin.x1,
+      y: d3.sum(bin, yValue),
+    }));
     // TODO 4.2: Memoization for the binned data
     
     // TODO 3.2: use scaleLinear to define the scale of the y value in the bar chart (requires computation of binned data first)
             // TODO 3.2: domain starts a zero and ends at maximum (d3.max) of binned data
             // TODO 3.2: range is up to inner height
+    const yScale = d3
+    .scaleLinear()
+    .domain([0, d3.max(binnedData, (bin) => bin.y)])
+    .range([innerHeight, 0]);
+
     // TODO 4.2: Memoization for scale
     
     // TODO 4.1: D3 provides a horizontal brush object called d3.brushX that can be manipulated interactively. The brush 
@@ -76,8 +146,9 @@ const Histogram = ({width, height}) => {
     return (
         <>
             // TODO 3.2: delete the placeholder rectangle
-            <rect width={width} height={height} fill="none" stroke="#d95f02" strokeWidth="3"/>
+            <rect width={width} height={height} fill="white" stroke="#d95f02" strokeWidth="3"/>
             // TODO 3.2: return a width by height, filled, white rectangle as the background 
+            {/* <rect width={width} height={height} fill="white" /> */}
             // TODO 3.2: create a group element which transforms everything inside it by the margins for top and left
                 // TODO 3.2: When you finished the AxisLeft component, add it here and pass the necessary data. 
                 // TODO 3.2: Experiment with the tick offset to find a good value.
@@ -87,6 +158,25 @@ const Histogram = ({width, height}) => {
                 // TODO 3.2: Add a text element which contains your y axis label. Give it the class name axis-label and use 'middle' as 
                 //			 the text anchor. The text should be rotated by 90 degrees and positioned to the left of the axis. The best
                 // 			 way to do so is to use the transform attribute of the text element.
+            <g transform={`translate(${margin.left},${margin.top})`}>
+                <AxisLeft yScale={yScale} innerWidth={innerWidth} tickOffset={5} />
+                <AxisBottom xScale={xScale} innerHeight={innerHeight} tickOffset={5} />
+                <Bars
+                binnedData={binnedData}
+                xScale={xScale}
+                yScale={yScale}
+                innerHeight={innerHeight}
+                />
+                <text
+                className="axis-label"
+                transform={`translate(${-yAxisLabelOffset},${
+                    innerHeight / 2
+                }) rotate(-90)`}
+                textAnchor="middle"
+                >
+                Total Number of Dead and Missing
+                </text>
+            </g>
                 // TODO 4.1: add a group element with attrbute ref being the previously defined reference to the brus
         </>
         )
