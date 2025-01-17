@@ -11,7 +11,7 @@ body {
     stroke: #d9dfe0;
 }
 .worldGraticule .sphere {
-    fill: #fbfbfb;
+    fill: #f8f2f2;
 }
 .worldGraticule .graticule, .tick line {
     fill: none;
