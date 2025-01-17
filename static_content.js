@@ -28,11 +28,12 @@ const path = d3.geoPath().projection(projection);
 const graticule = d3.geoGraticule();
 
 const WorldGraticule = ({ width, height }) => {
-
+    const oceanColor = "#f5fcfe";
     return (
         <g className="worldGraticule">
             
-            <path d={path({ type: "Sphere" })}/>
+            <path d={path({ type: "Sphere" })}
+            fill={oceanColor}/>
             <path className="graticule" d={path(graticule())}/>
         </g>
     );

@@ -60,7 +60,7 @@ const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
             // TODO 3.2: width of a bar should be the difference between start and end date of each bar
             // TODO 3.2: height must be the inner height minus the height of the bar
 
-            const Bars = ({ binnedData, xScale, yScale, innerHeight }) => (
+            const Bars = ({ binnedData, xScale, yScale, innerHeight, fill }) => (
                 <g className="bars">
                   {binnedData.map((bin, index) => (
                     <rect
@@ -70,6 +70,7 @@ const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
                       y={yScale(bin.y)}
                       width={xScale(bin.x1) - xScale(bin.x0)}
                       height={innerHeight - yScale(bin.y)}
+                      fill={fill} 
                     />
                   ))}
                 </g>
@@ -142,11 +143,11 @@ const Histogram = ({width, height, data}) => {
         // TODO 4.1: connect the brush with the group element by calling brush() on the group element (use d3.select())
         // TODO 4.1: add an event listener to the brush which listens for the "brush end" event. inside set the brush extent. 
         //  		 You have to invert the selection by mapping the selection using xScale.invert
-    
+       
     return (
         <>
             // TODO 3.2: delete the placeholder rectangle
-            <rect width={width} height={height} fill="white" stroke="#d95f02" strokeWidth="3"/>
+            <rect width={width} height={height} fill="white"  />
             // TODO 3.2: return a width by height, filled, white rectangle as the background 
             {/* <rect width={width} height={height} fill="white" /> */}
             // TODO 3.2: create a group element which transforms everything inside it by the margins for top and left
@@ -166,6 +167,7 @@ const Histogram = ({width, height, data}) => {
                 xScale={xScale}
                 yScale={yScale}
                 innerHeight={innerHeight}
+                fill="#137B80"
                 />
                 <text
                 className="axis-label"
@@ -173,8 +175,13 @@ const Histogram = ({width, height, data}) => {
                     innerHeight / 2
                 }) rotate(-90)`}
                 textAnchor="middle"
+                style={{
+                  fontWeight: 'bolder',
+                  fontSize: 'x-small',
+                  fontFamily: 'fangsong',
+                }}
                 >
-                Total Number of Dead and Missing
+                Total Dead and Missing
                 </text>
             </g>
                 // TODO 4.1: add a group element with attrbute ref being the previously defined reference to the brus

@@ -3,9 +3,9 @@
 const App = () => {
     
     const width = 960;
-    const height = 500;
-    const dateHistogramSize = 0.2;
-
+    const height = 600;
+    const dateHistogramSize = 0.3;
+    const histogramHeight = height * dateHistogramSize;
     // TODO 4.1: Setup a state using React.useState similar to what we did for loading the data.
     
     // read world atlas data amd migrant data
@@ -35,7 +35,7 @@ const App = () => {
                 // TODO 4.1: Pass the filtered data to bubbles
                 <g transform={`translate(0, ${height - dateHistogramSize * height})`}>
                     // TODO 3.1: create a Histogram element and pass it the width and height
-                    <Histogram data={data} width={width} height={height} />
+                    <Histogram data={data} width={width} height={histogramHeight} />
                     // TODO 4.1: Pass the setter function of the brush extent to Histogram
                 </g>
             </svg>
