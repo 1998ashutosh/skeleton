@@ -1,19 +1,4 @@
-// --------------------------------------------------
-// TODO 3.1 and 3.2
-// --------------------------------------------------
-
-// TODO 3.2: create a AxisLeft component that takes the y scale, inner width and a tick offset
-    // TODO 3.2: on the y scale you can call the ticks() function which returns an array of tick positions
-    // TODO 3.2: we map the tick positions to a group element containing a line and a text
-        // TODO 3.2: create a group element with class name tick
-            // TODO 3.2: the key will be the tick value
-            // TODO 3.2: move the group to the right position using the transform of the group element
-            // TODO 3.2: now add the svg line element. Research which parameters it requires. Note that the y position is already correct due to the
-            // 			 transform we applied to the group
-            // TODO 3.2: add the text moved slightly to the left (use tick offset) 
-            // TODO 3.2: set the style attribute to  to make sure it aligns properly
-            // TODO 3.2: add the tick value as the text
-            
+           
             const AxisLeft = ({ yScale, innerWidth, tickOffset }) => (
               <g className="y-axis">
                 {yScale.ticks().map((tickValue) => (
@@ -32,8 +17,6 @@
             );
             
 
-// TODO 3.2: add the bottom axis in the same way as the axis left. You will need the innerHeight to specify for positioning the text and line
-// TODO 3.2: the textAnchor style for the text should be middle now
 const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
     <g className="x-axis" transform={`translate(0,${innerHeight})`}>
       {xScale.ticks().map((tickValue) => (
@@ -50,15 +33,6 @@ const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
       ))}
     </g>
   );
-// TODO 3.2: create a Bars component and add parameter when you need them for the following todos
-    // TODO 3.2: map each binned data entry to a rectangle
-            // TODO 3.2: className should be bar
-            // TODO 3.2: key is the index
-            // TODO 3.2: all of the following must be passed through x scale or y scale
-            // TODO 3.2: x coordinate is the beginning of the bar on the x axis
-            // TODO 3.2: y coordinate is the top height of each bar (keep in mind that the origin of the coordinate system is in the top left)
-            // TODO 3.2: width of a bar should be the difference between start and end date of each bar
-            // TODO 3.2: height must be the inner height minus the height of the bar
 
             const Bars = ({ binnedData, xScale, yScale, innerHeight, fill }) => (
                 <g className="bars">
@@ -75,31 +49,17 @@ const AxisBottom = ({ xScale, innerHeight, tickOffset }) => (
                   ))}
                 </g>
               );
-// TODO 3.1: Define an accessor function called yValue to access the total number of dead and missing migrants 
-// 			 ("Total Dead and Missing") from the original data table.
-// TODO 3.2: Define variables containing the text of your y axis label (we won't define an x axis label)
-// variables for the offset of the axis label
 const yAxisLabelOffset = 30;
-// margin (small gaps on the sides of the bar chart)
 const margin = { top: 0, right: 30, bottom: 20, left: 45 };
-// TODO 3.2: Define a time format using d3.timeFormat
 
 // TODO 4.1: brush extent setter as parameter
 const Histogram = ({width, height, data}) => {
-    // TODO 3.1: compute innerHeight and innerWidth by subtracting the margins from width and height. If
-    // 			you replace width and height in the placeholder rectangle below you will see it shrinking but
-    // 			move to the wrong place. We will take care of that later
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    // TODO 3.1: Define an accessor function (xValue) to access the date of the incident ("Reported Date") from
-    // 			 the orignal data table.
     const yValue = (d) => d["Total Number of Dead and Missing"];
     const xValue = (d) => d["Reported Date"];
-    // TODO 3.1: define the xScale using d3.scaleTime
-            // TODO 3.1: domain from min to max value of data. u can use d3.extent
-            // TODO 3.1: the range starts at zero and ends at inner width
-            // TODO 3.1: call nice to make it nice numbers for labeling	
+
     const xScale = d3
     .scaleTime()
     .domain(d3.extent(data, xValue))
@@ -107,9 +67,6 @@ const Histogram = ({width, height, data}) => {
     .nice();	
     // TODO 4.2: Memoization for scale
     
-    // TODO 3.1: grab the start and end from the domain
-
-    // TODO 3.1: aggregate the data into bins you can find a detailed description in the pdf
     const binnedData = d3
     .bin()
     .value(xValue)
@@ -122,9 +79,6 @@ const Histogram = ({width, height, data}) => {
     }));
     // TODO 4.2: Memoization for the binned data
     
-    // TODO 3.2: use scaleLinear to define the scale of the y value in the bar chart (requires computation of binned data first)
-            // TODO 3.2: domain starts a zero and ends at maximum (d3.max) of binned data
-            // TODO 3.2: range is up to inner height
     const yScale = d3
     .scaleLinear()
     .domain([0, d3.max(binnedData, (bin) => bin.y)])
@@ -146,19 +100,7 @@ const Histogram = ({width, height, data}) => {
        
     return (
         <>
-            // TODO 3.2: delete the placeholder rectangle
             <rect width={width} height={height} fill="white"  />
-            // TODO 3.2: return a width by height, filled, white rectangle as the background 
-            {/* <rect width={width} height={height} fill="white" /> */}
-            // TODO 3.2: create a group element which transforms everything inside it by the margins for top and left
-                // TODO 3.2: When you finished the AxisLeft component, add it here and pass the necessary data. 
-                // TODO 3.2: Experiment with the tick offset to find a good value.
-                // TODO 3.2: When you finished the AxisBottom component, add it here and pass the necessary data. 
-                // TODO 3.2: Experiment with the tick offset to find a good value.
-                // TODO 3.2: When you finished the Bars component, add it here and pass the necessary data. 
-                // TODO 3.2: Add a text element which contains your y axis label. Give it the class name axis-label and use 'middle' as 
-                //			 the text anchor. The text should be rotated by 90 degrees and positioned to the left of the axis. The best
-                // 			 way to do so is to use the transform attribute of the text element.
             <g transform={`translate(${margin.left},${margin.top})`}>
                 <AxisLeft yScale={yScale} innerWidth={innerWidth} tickOffset={5} />
                 <AxisBottom xScale={xScale} innerHeight={innerHeight} tickOffset={5} />
